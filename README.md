@@ -52,7 +52,7 @@ Contract versioning: adding a token is a minor version (profiles must add it). R
 
 1. `@devstyle/web`: the layer order, plus a loader that reads a profile, applies it as a constructable stylesheet and reloads it on change.
 2. `DevStyleKit` (Swift package): parser and checker, SwiftUI `Color`/`Font` values, and WKWebView injection.
-3. A shared profile folder with `devstyle.json` (`{ "light": "default-light", "dark": "default-dark" }`) that every app watches, so one change restyles all apps. Sandboxed apps need an App Group container; this needs checking for Developer ID apps on current macOS. Each app gets a "Follow shared style / Use my own" switch.
+3. A shared profile folder with `devstyle.json` (`{ "light": "default-light", "dark": "default-dark" }`) that every app watches, so one change restyles all apps. Sandboxed apps share it through the App Group `PWGXN26URQ.com.jsglazer.devstyle`. This was tested on macOS 26 with Developer ID and notarized apps: no prompt and no provisioning profile needed, and live change notification works. See `spikes/app-group/README.md`. Each app gets a "Follow shared style / Use my own" switch.
 4. Adoption order: devtex (web) → DevNotes (native) → mdview → pdf-markup. Future apps start from DevStyle via the Apps NewBuild checklist.
 5. Later: sync profiles to iPad/iPhone through iCloud.
 
