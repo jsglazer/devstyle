@@ -6,15 +6,29 @@ on:
 permissions:
   contents: read
 jobs:
-  check:
+  profiles-and-web:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
-      - run: node scripts/check.mjs --check
-      - name: Manifest is up to date
+      - name: Profiles valid and generated files current
+        run: node scripts/check.mjs --check
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+        with:
+          version: 12
+      - name: Web package
+        working-directory: packages/web
         run: |
-          node scripts/check.mjs
-          git diff --exit-code preview/manifest.js
+          pnpm install --frozen-lockfile
+          pnpm typecheck
+          pnpm test
+          pnpm build
+          git diff --exit-code dist
+  swift:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: DevStyleKit tests
+        run: swift test

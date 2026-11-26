@@ -1,0 +1,29 @@
+{
+  "name": "@devstyle/web",
+  "version": "1.0.2",
+  "description": "DevStyle loader for web views: parses profiles, applies them in cascade layers, follows light/dark and the shared profile folder",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "jsdom": "^31.0.1",
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.2"
+  }
+}

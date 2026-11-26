@@ -2,7 +2,7 @@
 
 One shared look for all my apps (devtex, mdview, pdf-markup, DevNotes, and future apps). DevStyle defines a fixed list of named style values (`--ds-*` CSS variables) and a set of **profiles**, each a small CSS file that sets every value. Each app reads the active profile in its own way, so changing the profile restyles every app.
 
-Status: **1.0.0: contract and sample profiles.** The web loader package, the Swift `DevStyleKit` package, the shared profile folder and the app changes come next (see [Roadmap](#roadmap)).
+Status: **1.0.2.** The contract, the sample profiles, the web package (`@devstyle/web`) and the Swift package (`DevStyleKit`) are done. Next: the apps adopt it (see [Roadmap](#roadmap)).
 
 ## Preview
 
@@ -48,13 +48,89 @@ Contract versioning: adding a token is a minor version (profiles must add it). R
 - **Native views** (DevNotes, and the native sidebars and settings in mdview and pdf-markup) read only the `--ds-name: value;` lines through `DevStyleKit`, which checks each value against its type. Arbitrary CSS never reaches native text rendering. This keeps DevNotes' existing security rule.
 - Native menus, title bars, toolbars and standard controls are not themed. They follow the system appearance and accent.
 
+## Shared folder
+
+All apps share one folder, so one change restyles every app that follows the shared choice:
+
+```
+~/Library/Group Containers/PWGXN26URQ.com.jsglazer.devstyle/DevStyle/
+  devstyle.json        { "version": 1, "light": "default-light", "dark": "default-dark" }
+  profiles/<id>.css
+```
+
+- **Sandboxed Mac apps** add the App Group `PWGXN26URQ.com.jsglazer.devstyle` to `com.apple.security.application-groups`. This was tested on macOS 26 with Developer ID and notarized apps: no prompt and no provisioning profile needed. See `spikes/app-group/README.md`.
+- **Unsandboxed apps** (devtex) read the path directly (`macSharedFolder(home)` in the web package).
+- The first app to start copies the built-in profiles and a default `devstyle.json` into the folder. Existing files are never overwritten, so edited profiles survive.
+- Apps watch the folder and re-apply on change. Save profile edits atomically (most editors do), because watching a directory sees file replacements, not in-place writes.
+- **Per-app opt-out:** each app stores its own preference (`follow: true` by default; otherwise its own light/dark profile ids). Swift apps keep it in UserDefaults under `DevStylePreference`.
+- iOS apps can't use a team-prefixed group; they use built-ins or their own group until iCloud sync exists.
+
+## Web package: `@devstyle/web`
+
+In `packages/web`: TypeScript, no runtime dependencies, compiled output committed in `dist/`.
+
+```jsonc
+// package.json (pnpm)
+"@devstyle/web": "github:jsglazer/devstyle#1.0.2&path:packages/web"
+```
+
+```ts
+import { DevStyle, LAYER_ORDER_CSS, type FolderHost } from '@devstyle/web';
+
+// The app supplies file access to the shared folder (e.g. Tauri commands); null = built-ins only.
+const host: FolderHost = { read, write, list, watch };
+const style = new DevStyle({
+  host,
+  preference: { follow: true },
+  onApply: (s) => setWindowAppearance(s.profile.header?.appearance), // native light/dark
+});
+await style.start(); // installs built-ins, applies, follows appearance + folder changes
+style.setLayer('user', userCss); // optional per-user CSS on top
+const pairs = pairProfiles(await style.listProfiles()); // for a picker
+```
+
+Start the app's own stylesheet with `LAYER_ORDER_CSS` (`@layer app-base, ds-profile, app-override, user;`) and put its defaults in `@layer app-base`: unlayered rules beat every layer. The profile is applied as a constructable stylesheet (or a `<style>` fallback). Tests: `cd packages/web && pnpm test`.
+
+## Swift package: `DevStyleKit`
+
+macOS 14+ and iOS 17+, Swift 6. Add `https://github.com/jsglazer/devstyle` as a SwiftPM dependency (from `1.0.2`).
+
+```swift
+import DevStyleKit
+
+@main struct MyApp: App {
+    @State private var style = DevStyleStore() // App Group folder, preference from UserDefaults
+    var body: some Scene {
+        WindowGroup { ContentView().devStyle(style) }
+    }
+}
+
+struct ContentView: View {
+    @Environment(\.dsTheme) private var theme
+    var body: some View {
+        Text("Hello").font(theme.uiFont).foregroundStyle(theme.color("fg")).background(theme.color("bg"))
+    }
+}
+
+// Web content: the active profile inside the same cascade layers.
+webView.configuration.userContentController.addUserScript(DSWebInjector.userScript(css: theme.profile.css))
+```
+
+- The parser reads only `--ds-name: value;` lines and checks each against its token type. Arbitrary CSS never reaches native rendering.
+- Missing or invalid values fall back to the built-in Default of the same appearance.
+- `DSFontResolver` maps CSS families: `-apple-system`/`system-ui` → system font, `ui-monospace`/`SF Mono` → system monospaced, `serif` → system serif, otherwise the first installed family.
+- `store.pairs` lists light/dark pairs for a picker. `store.setShared(...)` changes the choice for every app, and `store.setPreference(...)` changes only this one.
+- Tests: `swift test` (Swift Testing).
+
+## Generated files
+
+`node scripts/check.mjs` checks the profiles, then rewrites the generated files: `preview/manifest.js`, `packages/web/src/generated.ts` and `swift/Sources/DevStyleKit/Generated.swift` (the token table and built-in profile text). Run it after changing `tokens.json` or a profile. CI fails if a generated file is stale.
+
 ## Roadmap
 
-1. `@devstyle/web`: the layer order, plus a loader that reads a profile, applies it as a constructable stylesheet and reloads it on change.
-2. `DevStyleKit` (Swift package): parser and checker, SwiftUI `Color`/`Font` values, and WKWebView injection.
-3. A shared profile folder with `devstyle.json` (`{ "light": "default-light", "dark": "default-dark" }`) that every app watches, so one change restyles all apps. Sandboxed apps share it through the App Group `PWGXN26URQ.com.jsglazer.devstyle`. This was tested on macOS 26 with Developer ID and notarized apps: no prompt and no provisioning profile needed, and live change notification works. See `spikes/app-group/README.md`. Each app gets a "Follow shared style / Use my own" switch.
-4. Adoption order: devtex (web) → DevNotes (native) → mdview → pdf-markup. Future apps start from DevStyle via the Apps NewBuild checklist.
-5. Later: sync profiles to iPad/iPhone through iCloud.
+1. Apps adopt DevStyle in this order: devtex (web) → DevNotes (native) → mdview → pdf-markup. Each app's own Update file covers its work.
+2. Future apps start from DevStyle through the Apps NewBuild conventions (`Conventions by Stack`, section B).
+3. Later: sync profiles to iPad/iPhone through iCloud.
 
 ## Adding a profile
 
