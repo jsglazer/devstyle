@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DevStyle profile preview</title>
+    <link id="profile" rel="stylesheet" href="../profiles/default-light.css" />
+    <script src="manifest.js"></script>
+    <style>
+      /* Uses only --ds-* tokens, the way an app's base stylesheet would. */
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; }
+      body {
+        background: var(--ds-bg);
+        color: var(--ds-fg);
+        font: var(--ds-ui-size) / 1.4 var(--ds-ui-font);
+      }
+      button, select {
+        font: inherit;
+        color: inherit;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: var(--ds-radius);
+        padding: 3px var(--ds-space);
+        cursor: pointer;
+      }
+      button:hover { background: var(--ds-accent-soft); }
+      button:focus-visible, select:focus-visible { outline: 2px solid var(--ds-focus-ring); outline-offset: 1px; }
+      button.primary { background: var(--ds-accent); color: var(--ds-fg-on-accent); }
+      select { border-color: var(--ds-border); background: var(--ds-raised); }
+
+      .chooser {
+        display: flex; gap: var(--ds-space); align-items: center; flex-wrap: wrap;
+        padding: var(--ds-space) calc(var(--ds-space) * 2);
+        border-bottom: 1px solid var(--ds-border); background: var(--ds-panel);
+      }
+      .chooser h1 { font-size: 1.1em; margin: 0 var(--ds-space) 0 0; }
+      .chooser .spacer { flex: 1; }
+
+      .app { display: grid; grid-template-rows: auto auto 1fr auto; height: calc(100vh - 46px); }
+      body.embed .app { height: 100vh; }
+      body.embed .chooser { display: none; }
+      .toolbar { display: flex; gap: 2px; padding: 4px var(--ds-space); background: var(--ds-panel); border-bottom: 1px solid var(--ds-border); }
+      .sep { width: 1px; margin: 3px 5px; background: var(--ds-border); }
+      .tabs { display: flex; background: var(--ds-panel); border-bottom: 1px solid var(--ds-border); }
+      .tabs button { border-radius: 0; border-right: 1px solid var(--ds-border); }
+      .tabs button.active { background: var(--ds-bg); font-weight: 600; box-shadow: inset 0 -2px 0 var(--ds-accent); }
+      .main { display: grid; grid-template-columns: 180px 1fr 1fr; min-height: 0; }
+      .side { background: var(--ds-panel); border-right: 1px solid var(--ds-border); padding: var(--ds-space); overflow: auto; }
+      .side div { padding: 3px 6px; border-radius: var(--ds-radius-small); }
+      .side div.current { background: var(--ds-accent-soft); }
+      .side .h2 { padding-left: 18px; color: var(--ds-muted); }
+
+      .editor {
+        display: grid; grid-template-columns: auto 1fr; overflow: auto;
+        background: var(--ds-editor-bg); color: var(--ds-editor-fg);
+        font: var(--ds-mono-size) / var(--ds-mono-line-height) var(--ds-mono-font);
+        border-right: 1px solid var(--ds-border);
+      }
+      .gutter { background: var(--ds-gutter-bg); color: var(--ds-gutter-fg); text-align: right; padding: 0 8px; user-select: none; }
+      .code { padding: 0 10px; }
+      .code div { white-space: pre; }
+      .code div { min-height: calc(var(--ds-mono-size) * var(--ds-mono-line-height)); }
+      .code .active { background: var(--ds-active-line); }
+      .caret { border-left: 2px solid var(--ds-cursor); margin-left: -1px; }
+      .k { color: var(--ds-syn-keyword); }
+      .e { color: var(--ds-syn-env); font-weight: 600; }
+      .h { color: var(--ds-syn-heading); font-weight: 600; }
+      .m { color: var(--ds-syn-math); }
+      .n { color: var(--ds-syn-number); }
+      .a { color: var(--ds-syn-atom); }
+      .c { color: var(--ds-syn-comment); font-style: italic; }
+      .b { color: var(--ds-syn-bracket); }
+      .mt { color: var(--ds-syn-meta); }
+      .x { color: var(--ds-syn-error); text-decoration: wavy underline; }
+      .cd { color: var(--ds-syn-code); }
+      .q { color: var(--ds-syn-quote); }
+      .l { color: var(--ds-syn-link); text-decoration: underline; }
+      .sel { background: var(--ds-selection); }
+      .smatch { background: var(--ds-selection-match); }
+      .bracket { background: var(--ds-matching-bracket); }
+      .broken { background: var(--ds-broken); }
+      .pair { background: var(--ds-pair-highlight); }
+      .found { background: var(--ds-search-match); }
+      .found.cur { background: var(--ds-search-current); }
+
+      .right { display: grid; grid-template-rows: 1fr 1fr; min-height: 0; }
+      .prose {
+        overflow: auto; padding: 14px 24px;
+        font: var(--ds-prose-size) / var(--ds-prose-line-height) var(--ds-prose-font);
+      }
+      .prose h2 { font-family: var(--ds-heading-font); margin: 0.2em 0 0.4em; font-size: 1.3em; }
+      .prose a { color: var(--ds-link); }
+      .prose code { font: 0.85em var(--ds-mono-font); color: var(--ds-syn-code); }
+      .prose .synced { background: var(--ds-sync); border-radius: var(--ds-radius-small); }
+      .prose blockquote { margin: 0.5em 0; padding-left: 12px; border-left: 3px solid var(--ds-border); color: var(--ds-muted); }
+      .pages { background: var(--ds-page-bg); border-top: 1px solid var(--ds-border); display: flex; gap: 16px; justify-content: center; align-items: center; overflow: hidden; position: relative; }
+      .page { width: 120px; height: 150px; background: #ffffff; box-shadow: var(--ds-page-shadow); filter: var(--ds-page-filter); padding: 12px; }
+      .page i { display: block; height: 4px; margin: 6px 0; background: #555555; border-radius: 2px; }
+      .page i:nth-child(3n) { width: 70%; }
+      .dialog {
+        position: absolute; right: 16px; bottom: 12px; width: 230px; padding: 12px;
+        background: var(--ds-raised); border: 1px solid var(--ds-border); border-radius: calc(var(--ds-radius) * 2);
+        box-shadow: var(--ds-shadow); font-size: 0.95em;
+      }
+      .dialog p { margin: 0 0 8px; }
+      .dialog .row { display: flex; gap: 6px; justify-content: flex-end; }
+
+      .status { display: flex; gap: 12px; align-items: center; padding: 3px var(--ds-space); background: var(--ds-panel); border-top: 1px solid var(--ds-border); color: var(--ds-muted); font-size: 0.92em; }
+      .badge { color: var(--ds-fg-on-accent); padding: 0 6px; border-radius: var(--ds-radius-small); }
+      .badge.err { background: var(--ds-error); }
+      .badge.ok { background: var(--ds-success); }
+      .t-err { color: var(--ds-error); } .t-warn { color: var(--ds-warning); } .t-info { color: var(--ds-info); }
+
+      .tokens { padding: calc(var(--ds-space) * 2); border-top: 1px solid var(--ds-border); }
+      .tokens h2 { font-size: 1em; margin: 0 0 8px; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 4px 16px; }
+      .tok { display: flex; gap: 8px; align-items: center; font: 12px var(--ds-mono-font); }
+      .sw { width: 22px; height: 16px; border: 1px solid var(--ds-border); border-radius: 3px; flex: none;
+        background: repeating-conic-gradient(#cccccc 0% 25%, #ffffff 0% 50%) 50% / 8px 8px; position: relative; }
+      .sw span { position: absolute; inset: 0; border-radius: 2px; }
+      .tok .v { color: var(--ds-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+      .all { display: none; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 12px; }
+      .all figure { margin: 0; }
+      .all figcaption { margin-bottom: 4px; font-weight: 600; }
+      .all iframe { width: 100%; height: 420px; border: 1px solid var(--ds-border); border-radius: var(--ds-radius); }
+      body.show-all .app, body.show-all .tokens { display: none; }
+      body.show-all .all { display: grid; }
+    </style>
+  </head>
+  <body>
+    <div class="chooser">
+      <h1>DevStyle preview</h1>
+      <label>Profile <select id="pick"></select></label>
+      <button id="flip" title="Switch to this profile's light/dark pair">Switch to pair</button>
+      <span class="spacer"></span>
+      <button id="toggle-all">Show all profiles</button>
+    </div>
+
+    <div class="app">
+      <div class="toolbar">
+        <button><b>B</b></button><button><i>I</i></button><button>§</button><span class="sep"></span>
+        <button>Compile</button><button class="primary">Push</button>
+      </div>
+      <div class="tabs"><button class="active">main.tex</button><button>refs.bib</button><button>ch1.tex</button></div>
+      <div class="main">
+        <div class="side">
+          <div>Introduction</div><div class="current">Model</div><div class="h2">Identification</div><div class="h2">Estimation</div><div>Results</div>
+        </div>
+        <div class="editor">
+          <div class="gutter">1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11</div>
+          <div class="code">
+<div><span class="mt">% !TEX root = main.tex</span></div>
+<div><span class="k">\section</span><span class="b">{</span><span class="h">Model</span><span class="b">}</span></div>
+<div><span class="c">% the regression of interest</span></div>
+<div class="pair"><span class="k">\begin</span><span class="b">{</span><span class="e">equation</span><span class="b">}</span></div>
+<div class="active">  <span class="m">y_i = \beta_0 + \beta_1 x_i + u_i</span><span class="caret"></span></div>
+<div class="pair"><span class="k">\end</span><span class="b">{</span><span class="e">equation</span><span class="b">}</span></div>
+<div>We use <span class="sel">OLS</span> with <span class="n">1000</span> draws <span class="a">~</span><span class="k">\cite</span><span class="bracket">{</span>wooldridge<span class="bracket">}</span>.</div>
+<div>Another <span class="smatch">OLS</span> fit, see <span class="found cur">beta</span> and <span class="found">beta</span>.</div>
+<div><span class="k">\textbf</span><span class="broken">{</span>unclosed brace <span class="x">\badmacro</span></div>
+<div><span class="q">&gt; quoted</span>  <span class="cd">`code`</span>  <span class="l">https://example.org</span></div>
+<div></div>
+          </div>
+        </div>
+        <div class="right">
+          <div class="prose">
+            <h2>1 Model</h2>
+            <p>The regression of interest is <span class="synced">y = β₀ + β₁x + u</span>. We use OLS with 1000 draws, following <a href="#">Wooldridge (2020)</a> and <code>lm()</code>.</p>
+            <blockquote>A quoted remark in muted text.</blockquote>
+          </div>
+          <div class="pages">
+            <div class="page"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="page"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="dialog">
+              <p><b>Push to GitHub?</b></p>
+              <p>2 files changed.</p>
+              <div class="row"><button>Cancel</button><button class="primary">Push</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="status">
+        <span>Ln 5, Col 38</span><span class="badge ok">Compiled</span><span class="badge err">2 errors</span>
+        <span class="t-err">Undefined control sequence</span><span class="t-warn">Overfull \hbox</span><span class="t-info">Synced</span>
+      </div>
+    </div>
+
+    <section class="tokens"><h2 id="tok-title">Tokens</h2><div class="grid" id="tok-grid"></div></section>
+    <section class="all" id="all"></section>
+
+    <script>
+      const ds = window.DEVSTYLE;
+      const params = new URLSearchParams(location.search);
+      const pick = document.getElementById('pick');
+      const link = document.getElementById('profile');
+      if (params.has('embed')) document.body.classList.add('embed');
+      for (const p of ds.profiles) pick.append(new Option(p.name, p.id));
+      const initial = params.get('profile') ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'default-dark' : 'default-light');
+
+      function apply(id) {
+        const p = ds.profiles.find((q) => q.id === id) ?? ds.profiles[0];
+        pick.value = p.id;
+        link.href = `../${p.file}`;
+        link.onload = renderTokens;
+        document.getElementById('tok-title').textContent = `Tokens: ${p.name}`;
+        if (!params.has('embed')) history.replaceState(null, '', `?profile=${p.id}`);
+      }
+      function renderTokens() {
+        const cs = getComputedStyle(document.documentElement);
+        const grid = document.getElementById('tok-grid');
+        grid.replaceChildren();
+        for (const t of ds.tokens) {
+          const v = cs.getPropertyValue(`--ds-${t.name}`).trim();
+          const row = document.createElement('div');
+          row.className = 'tok';
+          row.title = `${t.group}: ${t.description}`;
+          const sw = document.createElement('span');
+          sw.className = 'sw';
+          if (t.type === 'color') {
+            const fill = document.createElement('span');
+            fill.style.background = v;
+            sw.append(fill);
+          } else sw.style.visibility = 'hidden';
+          const name = document.createElement('span');
+          name.textContent = `--ds-${t.name}`;
+          const val = document.createElement('span');
+          val.className = 'v';
+          val.textContent = v;
+          row.append(sw, name, val);
+          grid.append(row);
+        }
+      }
+      pick.onchange = () => apply(pick.value);
+      document.getElementById('flip').onclick = () => apply(ds.profiles.find((q) => q.id === pick.value).pair);
+      document.getElementById('toggle-all').onclick = (e) => {
+        const on = document.body.classList.toggle('show-all');
+        e.target.textContent = on ? 'Show one profile' : 'Show all profiles';
+        const all = document.getElementById('all');
+        if (on && all.childElementCount === 0) {
+          for (const p of ds.profiles) {
+            const fig = document.createElement('figure');
+            const cap = document.createElement('figcaption');
+            cap.textContent = p.name;
+            const frame = document.createElement('iframe');
+            frame.src = `index.html?embed=1&profile=${p.id}`;
+            frame.loading = 'lazy';
+            fig.append(cap, frame);
+            all.append(fig);
+          }
+        }
+      };
+      apply(initial);
+    </script>
+  </body>
+</html>

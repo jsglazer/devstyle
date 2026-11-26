@@ -1,0 +1,82 @@
+/* devstyle: name="Solarized Dark" appearance=dark pair=solarized-light */
+/* Solarized (Ethan Schoonover's palette), dark variant. Text, accent and a few syntax colours are darkened or lightened slightly to pass the contrast check. */
+:root {
+  color-scheme: dark;
+
+  /* surface */
+  --ds-bg: #002b36;
+  --ds-panel: #073642;
+  --ds-raised: #073642;
+  --ds-border: #0d4a57;
+  --ds-overlay: rgba(0, 0, 0, 0.5);
+
+  /* text */
+  --ds-fg: #93a1a1;
+  --ds-muted: #657b83;
+  --ds-fg-on-accent: #002b36;
+
+  /* accent */
+  --ds-accent: #4aa3e3;
+  --ds-accent-soft: rgba(38, 139, 210, 0.12);
+  --ds-focus-ring: rgba(38, 139, 210, 0.45);
+  --ds-link: #4aa3e3;
+
+  /* status */
+  --ds-error: #dc322f;
+  --ds-warning: #b58900;
+  --ds-success: #859900;
+  --ds-info: #2aa198;
+
+  /* editing */
+  --ds-editor-bg: #002b36;
+  --ds-editor-fg: #839496;
+  --ds-gutter-bg: #073642;
+  --ds-gutter-fg: #7a9097;
+  --ds-cursor: #93a1a1;
+  --ds-selection: rgba(38, 139, 210, 0.25);
+  --ds-active-line: rgba(238, 232, 213, 0.05);
+  --ds-matching-bracket: rgba(133, 153, 0, 0.35);
+  --ds-selection-match: rgba(181, 137, 0, 0.22);
+  --ds-search-match: rgba(181, 137, 0, 0.32);
+  --ds-search-current: rgba(203, 75, 22, 0.5);
+  --ds-broken: rgba(220, 50, 47, 0.35);
+  --ds-pair-highlight: rgba(108, 113, 196, 0.25);
+  --ds-sync: rgba(181, 137, 0, 0.3);
+
+  /* syntax */
+  --ds-syn-heading: #268bd2;
+  --ds-syn-keyword: #859900;
+  --ds-syn-env: #268bd2;
+  --ds-syn-math: #2aa198;
+  --ds-syn-number: #d33682;
+  --ds-syn-atom: #cb4b16;
+  --ds-syn-comment: #6f878e;
+  --ds-syn-code: #cb4b16;
+  --ds-syn-quote: #839496;
+  --ds-syn-link: #6c71c4;
+  --ds-syn-bracket: #839496;
+  --ds-syn-meta: #d33682;
+  --ds-syn-error: #dc322f;
+
+  /* type */
+  --ds-ui-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  --ds-ui-size: 13px;
+  --ds-mono-font: 'SF Mono', Menlo, monospace;
+  --ds-mono-size: 14px;
+  --ds-mono-line-height: 1.5;
+  --ds-prose-font: Charter, 'Iowan Old Style', Georgia, serif;
+  --ds-prose-size: 16px;
+  --ds-prose-line-height: 1.55;
+  --ds-heading-font: -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* shape */
+  --ds-radius: 5px;
+  --ds-radius-small: 3px;
+  --ds-space: 8px;
+  --ds-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+
+  /* page */
+  --ds-page-bg: #00212b;
+  --ds-page-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+  --ds-page-filter: brightness(0.92);
+}

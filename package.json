@@ -1,0 +1,12 @@
+{
+  "name": "devstyle",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shared style tokens and profiles for jsglazer apps",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "check": "node scripts/check.mjs --check",
+    "build": "node scripts/check.mjs"
+  }
+}

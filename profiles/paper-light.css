@@ -1,0 +1,82 @@
+/* devstyle: name="Paper Light" appearance=light pair=paper-dark */
+/* Paper: warm cream pages, sepia accent, serif headings. */
+:root {
+  color-scheme: light;
+
+  /* surface */
+  --ds-bg: #f7f3e8;
+  --ds-panel: #efe9d9;
+  --ds-raised: #fbf8f0;
+  --ds-border: #d9cfb8;
+  --ds-overlay: rgba(60, 45, 20, 0.3);
+
+  /* text */
+  --ds-fg: #2b2622;
+  --ds-muted: #7a6f60;
+  --ds-fg-on-accent: #fbf8f0;
+
+  /* accent */
+  --ds-accent: #8a4b1f;
+  --ds-accent-soft: rgba(138, 75, 31, 0.1);
+  --ds-focus-ring: rgba(138, 75, 31, 0.4);
+  --ds-link: #8a4b1f;
+
+  /* status */
+  --ds-error: #b03a2e;
+  --ds-warning: #a0630a;
+  --ds-success: #4e7a2c;
+  --ds-info: #2f6a8a;
+
+  /* editing */
+  --ds-editor-bg: #f7f3e8;
+  --ds-editor-fg: #2b2622;
+  --ds-gutter-bg: #efe9d9;
+  --ds-gutter-fg: #857a65;
+  --ds-cursor: #2b2622;
+  --ds-selection: rgba(138, 75, 31, 0.18);
+  --ds-active-line: rgba(138, 110, 60, 0.08);
+  --ds-matching-bracket: rgba(80, 200, 120, 0.35);
+  --ds-selection-match: rgba(255, 210, 0, 0.25);
+  --ds-search-match: rgba(255, 210, 0, 0.35);
+  --ds-search-current: rgba(255, 150, 0, 0.55);
+  --ds-broken: rgba(230, 60, 60, 0.35);
+  --ds-pair-highlight: rgba(70, 120, 160, 0.2);
+  --ds-sync: rgba(255, 200, 0, 0.35);
+
+  /* syntax */
+  --ds-syn-heading: #7a3e12;
+  --ds-syn-keyword: #6b4c9a;
+  --ds-syn-env: #2f6a8a;
+  --ds-syn-math: #4e7a2c;
+  --ds-syn-number: #a33a2a;
+  --ds-syn-atom: #a0630a;
+  --ds-syn-comment: #958a76;
+  --ds-syn-code: #8a4b1f;
+  --ds-syn-quote: #6e6352;
+  --ds-syn-link: #8a4b1f;
+  --ds-syn-bracket: #6e6352;
+  --ds-syn-meta: #9a3b6a;
+  --ds-syn-error: #b03a2e;
+
+  /* type */
+  --ds-ui-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  --ds-ui-size: 13px;
+  --ds-mono-font: 'SF Mono', Menlo, monospace;
+  --ds-mono-size: 14px;
+  --ds-mono-line-height: 1.5;
+  --ds-prose-font: Charter, 'Iowan Old Style', Georgia, serif;
+  --ds-prose-size: 17px;
+  --ds-prose-line-height: 1.6;
+  --ds-heading-font: 'Iowan Old Style', Charter, Georgia, serif;
+
+  /* shape */
+  --ds-radius: 4px;
+  --ds-radius-small: 3px;
+  --ds-space: 8px;
+  --ds-shadow: 0 10px 40px rgba(60, 45, 20, 0.3);
+
+  /* page */
+  --ds-page-bg: #e6dfcc;
+  --ds-page-shadow: 0 1px 4px rgba(60, 45, 20, 0.35);
+  --ds-page-filter: none;
+}

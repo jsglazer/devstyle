@@ -1,0 +1,82 @@
+/* devstyle: name="Default Dark" appearance=dark pair=default-light */
+/* Default: neutral Apple greys with an indigo accent (taken from DevTex 1.0.4). */
+:root {
+  color-scheme: dark;
+
+  /* surface */
+  --ds-bg: #1e1e20;
+  --ds-panel: #2a2a2d;
+  --ds-raised: #323236;
+  --ds-border: #3a3a3c;
+  --ds-overlay: rgba(0, 0, 0, 0.5);
+
+  /* text */
+  --ds-fg: #e8e8ed;
+  --ds-muted: #98989d;
+  --ds-fg-on-accent: #10121f;
+
+  /* accent */
+  --ds-accent: #8f9bff;
+  --ds-accent-soft: rgba(143, 155, 255, 0.14);
+  --ds-focus-ring: rgba(143, 155, 255, 0.45);
+  --ds-link: #a5afff;
+
+  /* status */
+  --ds-error: #ff6b5e;
+  --ds-warning: #ffb340;
+  --ds-success: #5fd068;
+  --ds-info: #5ac8fa;
+
+  /* editing */
+  --ds-editor-bg: #1e1e20;
+  --ds-editor-fg: #e8e8ed;
+  --ds-gutter-bg: #232326;
+  --ds-gutter-fg: #6e6e73;
+  --ds-cursor: #e8e8ed;
+  --ds-selection: rgba(143, 155, 255, 0.28);
+  --ds-active-line: rgba(160, 160, 220, 0.08);
+  --ds-matching-bracket: rgba(80, 200, 120, 0.35);
+  --ds-selection-match: rgba(255, 210, 0, 0.18);
+  --ds-search-match: rgba(255, 210, 0, 0.28);
+  --ds-search-current: rgba(255, 150, 0, 0.5);
+  --ds-broken: rgba(255, 80, 80, 0.35);
+  --ds-pair-highlight: rgba(80, 160, 255, 0.28);
+  --ds-sync: rgba(255, 200, 0, 0.25);
+
+  /* syntax */
+  --ds-syn-heading: #7dd3fc;
+  --ds-syn-keyword: #c4b5fd;
+  --ds-syn-env: #7dd3fc;
+  --ds-syn-math: #6ee7b7;
+  --ds-syn-number: #fca5a5;
+  --ds-syn-atom: #fcd34d;
+  --ds-syn-comment: #8e8e93;
+  --ds-syn-code: #fdba74;
+  --ds-syn-quote: #a1a1aa;
+  --ds-syn-link: #a5afff;
+  --ds-syn-bracket: #94a3b8;
+  --ds-syn-meta: #f9a8d4;
+  --ds-syn-error: #f87171;
+
+  /* type */
+  --ds-ui-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  --ds-ui-size: 13px;
+  --ds-mono-font: 'SF Mono', Menlo, monospace;
+  --ds-mono-size: 14px;
+  --ds-mono-line-height: 1.5;
+  --ds-prose-font: Charter, 'Iowan Old Style', Georgia, serif;
+  --ds-prose-size: 16px;
+  --ds-prose-line-height: 1.55;
+  --ds-heading-font: -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* shape */
+  --ds-radius: 5px;
+  --ds-radius-small: 3px;
+  --ds-space: 8px;
+  --ds-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+
+  /* page */
+  --ds-page-bg: #161618;
+  --ds-page-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+  --ds-page-filter: none;
+}
