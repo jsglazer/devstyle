@@ -1,5 +1,7 @@
 # DevStyle
 
+[![GitHub release](https://img.shields.io/github/v/release/jsglazer/devstyle?logo=github)](https://github.com/jsglazer/devstyle/releases) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/jsglazer/devstyle/blob/main/LICENSE) [![Made with Claude](https://img.shields.io/badge/Made_with-Claude-D97756?logo=anthropic)](https://claude.ai) [![CI](https://github.com/jsglazer/devstyle/actions/workflows/ci.yml/badge.svg)](https://github.com/jsglazer/devstyle/actions/workflows/ci.yml)
+
 One shared look for all my apps (devtex, mdview, pdf-markup, DevNotes, and future apps). DevStyle defines a fixed list of named style values (`--ds-*` CSS variables) and a set of **profiles**, each a small CSS file that sets every value. Each app reads the active profile in its own way, so changing the profile restyles every app.
 
 Status: **1.0.2.** The contract, the sample profiles, the web package (`@devstyle/web`) and the Swift package (`DevStyleKit`) are done. Next: the apps adopt it (see [Roadmap](#roadmap)).
@@ -75,7 +77,7 @@ In `packages/web`: TypeScript, no runtime dependencies, compiled output committe
 ```
 
 ```ts
-import { DevStyle, LAYER_ORDER_CSS, type FolderHost } from '@devstyle/web';
+import { DevStyle, LAYER_ORDER_CSS, pairProfiles, type FolderHost } from '@devstyle/web';
 
 // The app supplies file access to the shared folder (e.g. Tauri commands); null = built-ins only.
 const host: FolderHost = { read, write, list, watch };
