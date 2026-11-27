@@ -34,3 +34,13 @@ I created the repo myself: **https://github.com/jsglazer/devstyle** (public), cl
 **Assumptions I made:** apps can opt out of the shared style (with "follow shared" as the default), and iPad/iPhone sync is a later step. Both are written into the README roadmap.
 
 **Not done yet:** the web loader, `DevStyleKit`, the shared folder (App Group, which still needs checking for apps distributed outside the App Store), and the app changes. There's also no VaultDEV project folder or Dev file for devstyle yet. I can create `~/VaultDEV/2-Projects/Other/devstyle/` with a Dev file and an Update000 for the next phase if you want.
+
+## 2026-11-26 19:25 — 1.0.3: per-level heading tokens, upgrade for old built-ins
+
+**Prompt:** "1. add per-level tokens" (for the DevNotes adoption, Update16)
+
+**Output:**
+- Contract 1.1.0 adds `syn-heading-1` … `syn-heading-6`, one colour per heading level. Every built-in sets them: Default carries DevNotes' rainbow, darkened to meet contrast in light mode. Each level is checked for 3:1 contrast on `editor-bg`.
+- Built-in upgrade: apps never overwrite edited profiles, but a folder file that is exactly an older released built-in is now replaced by the current one, so new tokens reach copies installed by older apps (devtex 1.0.7 installs 1.0.2 copies). `profiles-history.json` records released hashes, `check.mjs --record <version>` adds them, and the generated `PREVIOUS_BUILTIN_HASHES` / `previousBuiltinHashes` drive `installBuiltins`, which compares without trailing newlines.
+- The Swift built-in strings now keep the file's final newline, matching web installs.
+- Tests: web 17 and Swift 18, both passing, including upgrade and edited-file cases. Version 1.0.3.

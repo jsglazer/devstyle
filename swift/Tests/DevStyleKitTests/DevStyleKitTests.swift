@@ -112,6 +112,32 @@ struct TempFolder: ~Copyable {
         #expect(try folder.installBuiltins() == [])
     }
 
+    @Test func upgradesUneditedOldBuiltinsOnly() throws {
+        let tmp = TempFolder()
+        let folder = tmp.folder
+        // 1.0.2 shipped each built-in without the per-level heading tokens
+        func old(_ id: String) throws -> String {
+            try #require(DSGenerated.builtinProfiles[id])
+                .split(separator: "\n", omittingEmptySubsequences: false)
+                .filter { !$0.contains("--ds-syn-heading-") || $0.contains("--ds-syn-heading:") }
+                .joined(separator: "\n")
+        }
+        let light = try #require(folder.profileURL("paper-light"))
+        let dark = try #require(folder.profileURL("paper-dark"))
+        try FileManager.default.createDirectory(at: folder.profilesURL, withIntermediateDirectories: true)
+        try Data(old("paper-light").utf8).write(to: light)
+        let edited = try old("paper-dark") + "/* mine */\n"
+        try Data(edited.utf8).write(to: dark)
+        #expect(DSFolder.isOutdatedBuiltin(id: "paper-light", data: Data(try old("paper-light").utf8)))
+        #expect(!DSFolder.isOutdatedBuiltin(id: "paper-dark", data: Data(edited.utf8)))
+        let written = try folder.installBuiltins()
+        #expect(written.contains("profiles/paper-light.css"))
+        #expect(!written.contains("profiles/paper-dark.css"))
+        #expect(try String(contentsOf: light, encoding: .utf8) == DSGenerated.builtinProfiles["paper-light"])
+        #expect(try String(contentsOf: dark, encoding: .utf8) == edited)
+        #expect(try folder.installBuiltins() == [])
+    }
+
     @Test func listAndLoadWithFallback() throws {
         let tmp = TempFolder()
         let folder = tmp.folder

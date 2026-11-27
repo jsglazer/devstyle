@@ -16,9 +16,15 @@ export interface FolderHost {
     watch?(onChange: () => void): () => void;
 }
 export declare const profilePath: (id: string) => string;
+/** SHA-256 of a profile's UTF-8 text without trailing newlines, as lowercase hex. */
+export declare function sha256Hex(text: string): Promise<string>;
+/** True when `text` is exactly an older released version of built-in `id` (never edited). */
+export declare function isOutdatedBuiltin(id: string, text: string): Promise<boolean>;
 /**
  * Copy built-in profiles and a default devstyle.json into the folder. Never overwrites an
- * existing file, so edited profiles and the current choice survive. Returns what was written.
+ * edited file, so edited profiles and the current choice survive. A file that is exactly an
+ * older released built-in (never edited) is replaced by the current one, so new tokens reach
+ * it. Returns what was written.
  */
 export declare function installBuiltins(host: FolderHost): Promise<string[]>;
 /** Profiles in the folder plus any built-ins it lacks, sorted by name. Files without a valid header are skipped. */

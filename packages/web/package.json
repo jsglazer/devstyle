@@ -1,6 +1,6 @@
 {
   "name": "@devstyle/web",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "DevStyle loader for web views: parses profiles, applies them in cascade layers, follows light/dark and the shared profile folder",
   "license": "MIT",
   "type": "module",

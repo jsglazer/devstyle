@@ -45,6 +45,12 @@
 
   /* syntax */
   --ds-syn-heading: #6cf0ff;
+  --ds-syn-heading-1: #ff8a80;
+  --ds-syn-heading-2: #ffb74d;
+  --ds-syn-heading-3: #ffee58;
+  --ds-syn-heading-4: #b9f6ca;
+  --ds-syn-heading-5: #6cf0ff;
+  --ds-syn-heading-6: #e1bee7;
   --ds-syn-keyword: #e0b0ff;
   --ds-syn-env: #6cf0ff;
   --ds-syn-math: #5cff7a;

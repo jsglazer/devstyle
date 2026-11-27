@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 
 /// The shared profile folder:
@@ -33,15 +34,31 @@ public struct DSFolder: Sendable, Hashable {
         DSSelection.isValidId(id) ? profilesURL.appendingPathComponent("\(id).css") : nil
     }
 
+    /// True when `data` is exactly an older released version of built-in `id` (never edited).
+    public static func isOutdatedBuiltin(id: String, data: Data) -> Bool {
+        guard let old = DSGenerated.previousBuiltinHashes[id], !old.isEmpty else { return false }
+        if let current = DSGenerated.builtinProfiles[id], data == Data(current.utf8) { return false }
+        // hashed without trailing newlines, like profiles-history.json
+        var trimmed = data
+        while trimmed.last == UInt8(ascii: "\n") { trimmed.removeLast() }
+        let hex = SHA256.hash(data: trimmed).map { String(format: "%02x", $0) }.joined()
+        return old.contains(hex)
+    }
+
     /// Copy built-in profiles and a default devstyle.json into the folder. Never overwrites
-    /// an existing file. Returns the paths written, relative to the folder.
+    /// an edited file. A file that is exactly an older released built-in (never edited) is
+    /// replaced by the current one, so new tokens reach it. Returns the paths written,
+    /// relative to the folder.
     @discardableResult
     public func installBuiltins() throws -> [String] {
         let fm = FileManager.default
         try fm.createDirectory(at: profilesURL, withIntermediateDirectories: true)
         var written: [String] = []
         for (id, css) in DSGenerated.builtinProfiles.sorted(by: { $0.key < $1.key }) {
-            guard let u = profileURL(id), !fm.fileExists(atPath: u.path) else { continue }
+            guard let u = profileURL(id) else { continue }
+            if fm.fileExists(atPath: u.path) {
+                guard let existing = try? Data(contentsOf: u), Self.isOutdatedBuiltin(id: id, data: existing) else { continue }
+            }
             try Data(css.utf8).write(to: u, options: .atomic)
             written.append("\(Self.profilesDir)/\(id).css")
         }

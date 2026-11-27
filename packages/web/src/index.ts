@@ -1,5 +1,5 @@
 export * from './types.js';
-export { CONTRACT_VERSION, TOKENS, BUILTIN_PROFILES } from './generated.js';
+export { CONTRACT_VERSION, TOKENS, BUILTIN_PROFILES, PREVIOUS_BUILTIN_HASHES } from './generated.js';
 export { parseProfile, parseHeader, isValidValue } from './parse.js';
 export {
   DEFAULT_CONFIG,
@@ -19,6 +19,8 @@ export {
   macSharedFolder,
   profilePath,
   installBuiltins,
+  isOutdatedBuiltin,
+  sha256Hex,
   listProfiles,
   loadProfile,
   memoryHost,

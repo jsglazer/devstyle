@@ -1,0 +1,25 @@
+{
+  "_comment": "SHA-256 (of the text without trailing newlines) of every built-in profile as released, by version. Apps replace a folder copy that matches one of these exactly (an unedited older built-in) with the current built-in. Add the current hashes with `node scripts/check.mjs --record <version>` when releasing a version that changes a profile.",
+  "versions": {
+    "1.0.2": {
+      "default-dark": "4e4bd191547135c9185ca1f9f22106340b21471bc6321aec0aa8888094938f66",
+      "default-light": "eac140a58224a863cf1570d7111cda55bcd89f12c2e88f8a6b28d69f45c05916",
+      "high-contrast-dark": "e0a4f1e6da1b6b2704fa229e182b834c42efef1187ea8e21c3305368e74dd3a1",
+      "high-contrast-light": "66785f76f22172f74dcbb60461fceece8b72318109b8b5f8d1b977967563445c",
+      "paper-dark": "9c5685fa62701d7be4ec3aa7683e2e3dadb5cd3c181ba519a3986cef5ca31773",
+      "paper-light": "d19dfb6fd55d5e7254a7cb0c9ad845d386a989d0c9d08dde1d3683d293cbb9ca",
+      "solarized-dark": "bbee6a21877b149ddba2ad0d3f14993df90afb9d60276d7d6283d2006d08db86",
+      "solarized-light": "b0a9f3d02d87307c82be80e33399b79c1bd8c3e65c48e553bb771b84f3cbd68d"
+    },
+    "1.0.3": {
+      "default-dark": "4bffab04d7f2381090472175149ef10278c766e79ec6b8e6d3bf1f02bfecc2bd",
+      "default-light": "d33eb48c8ed592742874283d1b0b5d52938ef7c1fdf5d8e2bd01b8456e1aa8f8",
+      "high-contrast-dark": "541ca8090bfe320a90ae1cc3992b7b464048ba1e73bd74df390406437947246f",
+      "high-contrast-light": "3f61abd79f190976403952d8921e3b674e059507d4e9c53947ea627d030700ae",
+      "paper-dark": "f8f31e4de21fa6ec189dfa166957cf6ae8926259b3a57716fb1a1a9ffe209eed",
+      "paper-light": "b653f79193cfdd8369b61411f98a933e280ebefeade719462c7adef4286cbdf8",
+      "solarized-dark": "587ff4c8fa27abc68ff17820a7aca290954340303b12fb496fdd5499d7ef359e",
+      "solarized-light": "094d1dcb1979db9cb6caccd3038353214313be3e695393e2d5cc3ebafa83cb3d"
+    }
+  }
+}

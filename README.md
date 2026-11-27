@@ -4,7 +4,7 @@
 
 One shared look for all my apps (devtex, mdview, pdf-markup, DevNotes, and future apps). DevStyle defines a fixed list of named style values (`--ds-*` CSS variables) and a set of **profiles**, each a small CSS file that sets every value. Each app reads the active profile in its own way, so changing the profile restyles every app.
 
-Status: **1.0.2.** The contract, the sample profiles, the web package (`@devstyle/web`) and the Swift package (`DevStyleKit`) are done. Next: the apps adopt it (see [Roadmap](#roadmap)).
+Status: **1.0.3.** The contract, the sample profiles, the web package (`@devstyle/web`) and the Swift package (`DevStyleKit`) are done. devtex follows DevStyle from 1.0.7. 1.0.3 adds per-level heading colours (contract 1.1.0). Next: the remaining apps adopt it (see [Roadmap](#roadmap)).
 
 ## Preview
 
@@ -40,9 +40,9 @@ Profiles come in light/dark pairs. An app shows the light member or the dark mem
 
 ## Token contract
 
-`tokens.json` is the contract: 59 tokens in nine groups (surface, text, accent, status, editing, syntax, type, shape, page), each with a type and description. Apps may rely only on these names. Each app keeps its own variable names as aliases, for example `--dt-bg: var(--ds-bg)`, so its stylesheet barely changes.
+`tokens.json` is the contract (version 1.1.0): 65 tokens in nine groups (surface, text, accent, status, editing, syntax, type, shape, page), each with a type and description. Apps may rely only on these names. Each app keeps its own variable names as aliases, for example `--dt-bg: var(--ds-bg)`, so its stylesheet barely changes.
 
-Contract versioning: adding a token is a minor version (profiles must add it). Renaming or removing one is a major version.
+Contract versioning: adding a token is a minor version (profiles must add it). Renaming or removing one is a major version. 1.1.0 added `syn-heading-1` … `syn-heading-6`, one colour per heading level (Markdown `#` to `######`, LaTeX `\part`/`\chapter` down to `\subparagraph`). `syn-heading` stays the single colour for apps that don't tell levels apart. Each level needs 3:1 contrast on `editor-bg`.
 
 ## How apps use it
 
@@ -62,7 +62,7 @@ All apps share one folder, so one change restyles every app that follows the sha
 
 - **Sandboxed Mac apps** add the App Group `PWGXN26URQ.com.jsglazer.devstyle` to `com.apple.security.application-groups`. This was tested on macOS 26 with Developer ID and notarized apps: no prompt and no provisioning profile needed. See `spikes/app-group/README.md`.
 - **Unsandboxed apps** (devtex) read the path directly (`macSharedFolder(home)` in the web package).
-- The first app to start copies the built-in profiles and a default `devstyle.json` into the folder. Existing files are never overwritten, so edited profiles survive.
+- The first app to start copies the built-in profiles and a default `devstyle.json` into the folder. Edited files are never overwritten, so your changes survive. A file that is exactly an older released built-in, never edited, is replaced by the current one so it gets new tokens. `profiles-history.json` lists the SHA-256 of every released built-in (taken without trailing newlines). When a release changes a profile, run `node scripts/check.mjs --record <version>`.
 - Apps watch the folder and re-apply on change. Save profile edits atomically (most editors do), because watching a directory sees file replacements, not in-place writes.
 - **Per-app opt-out:** each app stores its own preference (`follow: true` by default; otherwise its own light/dark profile ids). Swift apps keep it in UserDefaults under `DevStylePreference`.
 - iOS apps can't use a team-prefixed group; they use built-ins or their own group until iCloud sync exists.
@@ -73,7 +73,7 @@ In `packages/web`: TypeScript, no runtime dependencies, compiled output committe
 
 ```jsonc
 // package.json (pnpm)
-"@devstyle/web": "github:jsglazer/devstyle#1.0.2&path:packages/web"
+"@devstyle/web": "github:jsglazer/devstyle#1.0.3&path:packages/web"
 ```
 
 ```ts
@@ -95,7 +95,7 @@ Start the app's own stylesheet with `LAYER_ORDER_CSS` (`@layer app-base, ds-prof
 
 ## Swift package: `DevStyleKit`
 
-macOS 14+ and iOS 17+, Swift 6. Add `https://github.com/jsglazer/devstyle` as a SwiftPM dependency (from `1.0.2`).
+macOS 14+ and iOS 17+, Swift 6. Add `https://github.com/jsglazer/devstyle` as a SwiftPM dependency (from `1.0.3`).
 
 ```swift
 import DevStyleKit

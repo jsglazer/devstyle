@@ -7,6 +7,7 @@ import {
   StyleLayers,
   TOKENS,
   installBuiltins,
+  isOutdatedBuiltin,
   listProfiles,
   loadProfile,
   macSharedFolder,
@@ -122,6 +123,28 @@ describe('folder', () => {
     expect(host.files.get(profilePath('default-light'))).toBe('edited');
     expect(host.files.get(CONFIG_FILE)).toBe('{"light":"paper-light"}');
     expect(await installBuiltins(host)).toEqual([]);
+  });
+
+  it('upgrades an unedited copy of an older built-in, but never an edited one', async () => {
+    // 1.0.2 shipped each built-in without the per-level heading tokens
+    const old = (id: string): string => (BUILTIN_PROFILES[id] ?? '').replace(/^.*--ds-syn-heading-[1-6]:.*\n/gm, '');
+    const edited = `${old('paper-dark')}/* mine */\n`;
+    const host = memoryHost({ [profilePath('paper-light')]: old('paper-light'), [profilePath('paper-dark')]: edited });
+    expect(await isOutdatedBuiltin('paper-light', old('paper-light'))).toBe(true);
+    expect(await isOutdatedBuiltin('paper-light', BUILTIN_PROFILES['paper-light'] ?? '')).toBe(false);
+    expect(await isOutdatedBuiltin('paper-dark', edited)).toBe(false);
+    expect(await isOutdatedBuiltin('nope', 'x')).toBe(false);
+    const written = await installBuiltins(host);
+    expect(written).toContain(profilePath('paper-light'));
+    expect(written).not.toContain(profilePath('paper-dark'));
+    expect(host.files.get(profilePath('paper-light'))).toBe(BUILTIN_PROFILES['paper-light']);
+    expect(host.files.get(profilePath('paper-dark'))).toBe(edited);
+    expect(await installBuiltins(host)).toEqual([]);
+  });
+
+  it('every built-in sets a colour for each heading level', () => {
+    for (const [id, css] of Object.entries(BUILTIN_PROFILES))
+      for (const n of [1, 2, 3, 4, 5, 6]) expect(css, `${id} ${n}`).toMatch(new RegExp(`--ds-syn-heading-${n}: #`));
   });
 
   it('lists folder profiles alongside built-ins and skips files without a header', async () => {

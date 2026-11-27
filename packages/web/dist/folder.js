@@ -9,7 +9,7 @@
  * FolderHost that reads and writes paths relative to that folder (Tauri commands, a
  * WKScriptMessage bridge, or memoryHost in tests).
  */
-import { BUILTIN_PROFILES } from './generated.js';
+import { BUILTIN_PROFILES, PREVIOUS_BUILTIN_HASHES } from './generated.js';
 import { parseHeader, parseProfile } from './parse.js';
 import { DEFAULT_CONFIG, serializeConfig } from './select.js';
 export const MAC_GROUP_ID = 'PWGXN26URQ.com.jsglazer.devstyle';
@@ -22,15 +22,31 @@ export function macSharedFolder(home) {
 }
 const ID_RE = /^[a-z0-9-]+$/;
 export const profilePath = (id) => `${PROFILES_DIR}/${id}.css`;
+/** SHA-256 of a profile's UTF-8 text without trailing newlines, as lowercase hex. */
+export async function sha256Hex(text) {
+    const bytes = new TextEncoder().encode(text.replace(/\n+$/, ''));
+    const digest = await globalThis.crypto.subtle.digest('SHA-256', bytes);
+    return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+/** True when `text` is exactly an older released version of built-in `id` (never edited). */
+export async function isOutdatedBuiltin(id, text) {
+    const old = PREVIOUS_BUILTIN_HASHES[id];
+    if (old === undefined || old.length === 0 || text === BUILTIN_PROFILES[id])
+        return false;
+    return old.includes(await sha256Hex(text));
+}
 /**
  * Copy built-in profiles and a default devstyle.json into the folder. Never overwrites an
- * existing file, so edited profiles and the current choice survive. Returns what was written.
+ * edited file, so edited profiles and the current choice survive. A file that is exactly an
+ * older released built-in (never edited) is replaced by the current one, so new tokens reach
+ * it. Returns what was written.
  */
 export async function installBuiltins(host) {
     const written = [];
     for (const [id, css] of Object.entries(BUILTIN_PROFILES)) {
         const path = profilePath(id);
-        if ((await host.read(path)) === null) {
+        const current = await host.read(path);
+        if (current === null || (await isOutdatedBuiltin(id, current))) {
             await host.write(path, css);
             written.push(path);
         }
